@@ -32,6 +32,7 @@ BOOLEAN nanosleep(LONGLONG ns) {
 		 	return TRUE;
 	
 }
+static int k = 206;
 
 void gotoXY(int y, int x,char c)
 {
@@ -87,6 +88,15 @@ map_cl::map_cl(){
 				}
 			}
 		}
+		map[0][25][25] = 29;
+		map[0][25][26] = 29;
+		map[0][25][27] = 29;
+		map[0][26][25] = 29;
+		map[0][26][26] = 208;
+		map[0][26][27] = 29;
+		map[0][27][25] = 29;
+		map[0][27][26] = 29;
+		map[0][27][27] = 29;
 		map[0][xx][yy] = 'O';
 
 }
@@ -142,11 +152,26 @@ bool map_cl::update(){
 		map[0][xx - 1][yy] = 205;
 	}
 	bool game_over = false;
+	switch (k) {
+	case 206:
+		k = 207;
+		break;
+	case 207:
+		k = 206;
+		break;
+	default:
+		break;
+	}
+
 	for (int x = 0; x < 50; x++) {
 		for (int y = 0; y < 50; y++) {
 			if (map[0][x][y] < 30)gotoXY(x, y, '*');
+			if (map[0][x][y] == 0)map[0][x][y] = 30;
 			if (map[0][x][y] == 205)gotoXY(x, y, '+');
+			if (map[0][x][y] == 208)gotoXY(x, y, 'G');
+
 			if (map[0][x][y] == 206)gotoXY(x, y, '-');
+			if (map[0][x][y] == 207)gotoXY(x, y, '-');
 			if (map[0][x][y] == 'O')gotoXY(x, y, 'O');
 
 			if (map[0][x][y] == 30)gotoXY(x, y, ' ');
@@ -156,7 +181,7 @@ bool map_cl::update(){
 				int t = 0;
 				while (t < 50) {
 					if ((map[0][t][y] == 'O') && (x < 49)) {
-						map[0][x + 1][y] = 206;
+						map[0][x + 1][y] = k;
 						break;
 					}
 					t++;
@@ -172,6 +197,10 @@ bool map_cl::update(){
 					continue;
 				}
 				if (map[0][x][y] == 200) {
+					if (map[0][x][y + 1] == 205) {
+						map[0][x][y] = 30;
+						continue;
+					}
 					if ((map[0][x][y + 1] == 30) || (map[0][x][y + 1] == 'O')) {
 						map[0][x][y] = 30;
 						map[0][x][y + 1] = 200;
@@ -181,6 +210,10 @@ bool map_cl::update(){
 					continue;
 				}
 				if (map[0][x][y] == 199) {
+					if (map[0][x][y - 1] == 205) {
+						map[0][x][y] = 30;
+						continue;
+					}
 					if ((map[0][x][y - 1] == 30) || (map[0][x][y - 1] == 'O')) {
 						map[0][x][y] = 30;
 						map[0][x][y - 1] = 199;
@@ -195,13 +228,15 @@ bool map_cl::update(){
 		for(int x = 0;x < 50;x++){
 			if (map[0][x][y] == 205) {
 				map[0][x][y] = 30;
-				if((x<50)&&(x>0)&&(map[0][x-1][y]>=30))map[0][x - 1][y] = 205;
+				if ((x < 50) && (x > 0) && (map[0][x - 1][y] >= 30))map[0][x - 1][y] = 205;
+				if ((x<50) && (x>0) && (map[0][x - 1][y] < 30)&& (map[0][x - 1][y] > 0))map[0][x - 1][y]--;
 			}
-			if (map[0][x][y] == 206) {
+			if (map[0][x][y] == k) {
 				map[0][x][y] = 30;
-				if ((x < 49) && (x > 0) && (map[0][x + 1][y] >= 30)) {
+				if ((x < 49) && (x > 0) && (map[0][x + 1][y] >= 30)&&(map[0][x+1][y]!=205)) {
 					if (map[0][x + 1][y] == 'O')return false;
-					if((map[0][x+1][y]!=205)||(!(map[0][x+1][y]<30)))map[0][x + 1][y] = 206;
+					if(k==206)map[0][x + 1][y] = 207;
+					else map[0][x + 1][y] = 206;
 				}
 			}
 
@@ -218,6 +253,10 @@ bool map_cl::update(){
 					continue;
 				}
 				if(map[0][x][y] == 202){
+					if (map[0][x + 1][y] == 205) {
+						map[0][x][y] = 30;
+						continue;
+					}
 					if ((map[0][x + 1][y] == 30)||(map[0][x + 1][y] == 'O')){
 						map[0][x][y] = 30;
 						map[0][x + 1][y] = 202;
@@ -227,6 +266,10 @@ bool map_cl::update(){
 					continue;
 				}
 				if(map[0][x][y] == 201){
+					if (map[0][x - 1][y] == 205) {
+						map[0][x][y] = 30;
+						continue;
+					}
 					if((map[0][x - 1][y] == 30)||(map[0][x - 1][y] == 'O')){
 						map[0][x][y] = 30;
 						map[0][x - 1][y]= 201;
